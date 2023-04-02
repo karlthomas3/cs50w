@@ -1,0 +1,12 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Encyclopedia
+{% endblock %}
+
+{% block body %}
+    <h1>That page already exists!</h1>
+
+    <a href="/wiki/{{ name }}">{{ name }}</a>
+
+{% endblock %}
