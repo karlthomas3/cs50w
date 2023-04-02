@@ -1,0 +1,27 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Categories</h2>
+
+        {% for item in categories %}
+            <form action="{% url 'categories' %}" method="post">
+                {% csrf_token %}
+                <input type="submit" name="category" value="{{ item.name }}">
+            </form>
+        {% endfor %}
+    <br>
+    {% if listings %}
+        <h2>Active listings</h2>
+        <br>
+        <ul>
+            {% for listing in listings %}
+                {% if listing.active %}
+                    <li><a href="{{ listing.id }}">{{ listing.name }}</a></li>
+                {% endif %}
+            {% empty %}
+                <li>No active listings</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+{% endblock %}

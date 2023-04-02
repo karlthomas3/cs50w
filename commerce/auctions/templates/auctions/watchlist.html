@@ -1,0 +1,22 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Watched Listings</h2>
+
+    <ul>
+        {% for item in watching %}
+        <li>
+            <form action=" {% url 'watchlist' %}" method="post">
+                {% csrf_token %}
+                <a href="{{ item.id }}">{{ item }}</a>
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <input type="hidden" value="{{ item.id }}" name="watch_item">
+                <input  type="submit" value="Remove from watchlist">
+            </form>
+        </li>
+        {% empty %}
+        <li>No active listings</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

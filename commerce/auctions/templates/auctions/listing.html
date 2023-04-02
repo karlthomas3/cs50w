@@ -1,0 +1,97 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{ listing.name }}</h2>
+    <div> <img src="{{ listing.pic_url }} " style="float:right; margin-right: 10%; "></div>
+    <div>
+        Category: {{ listing.category }}
+    </div>
+    <br>
+    <div>
+        Description: {{ listing.description }}
+    </div>
+    <br>
+    <div>
+        {% if listing.active %}
+            Current bid: ${{ listing.current_price }}
+        {% else %}
+            <h3>Bidding is closed on this item</h3>
+            {% if highest == user %}
+                <h2>Congratulations! Your bid won!</h2>
+            {% else %}
+                The winning bid was placed by {{ highest }}
+            {% endif %}
+        {% endif %}
+    </div>
+    <br>
+    <div>
+        Seller: {{ listing.seller }}
+    </div>
+    <br>
+    {% if user.is_authenticated and listing.active %}
+        {% if user.username == listing.seller.username %}
+        <div>
+            <form action="{% url 'end_listing' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <input type="hidden" name="listing" value="{{listing.id}}">
+                <input class="btn btn-primary" type="submit" value="End Listing">
+            </form>
+            <br>
+        </div>
+        {% endif %}
+    <div>
+        {% if message %}
+            <div>{{ message }}</div>
+        {% endif %}
+        <form action="{% url 'bid' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <input type="hidden" name="listing" value="{{listing.id}}">
+            <input type="number" name="bid" placeholder="${{ listing.current_price }}" step="0.01">
+            <input class="btn btn-primary" type="submit" value="Bid">
+        </form>
+    </div>
+    <br>
+    <div>
+        {% if watching %}
+            <form action=" {% url 'watchlist' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <input type="hidden" value="{{ listing.id }}" name="watch_item">
+                <input class="btn btn-primary" type="submit" value="Remove from watchlist">
+            </form>
+        {% else %}
+            <form action=" {% url 'watchlist' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <input type="hidden" value="{{ listing.id }}" name="watch_item">
+                <input class="btn btn-primary" type="submit" value="Add to watchlist">
+            </form>
+        {% endif %}
+    </div>
+    <br>
+    <div>      
+        <form action="{% url 'comment' %}" method="post">
+            {% csrf_token %}
+            <h4>Add Comment</h4>
+            <input type="hidden" name="listing" value="{{ listing.id }}">
+            <input type="text" name="text">
+            <input class="btn btn-primary" type="submit" value="submit">
+        </form>
+    {% else %}
+        <h3>Must be logged in to comment or bid</h3>
+    {% endif %}
+        <h2>Comments</h2>
+        <ul>
+            {% for comment in comments %}
+            <div>
+                <li>User: {{ comment.user }}</li>
+                <li>{{ comment.text }}</li>
+            </div>
+            <br>
+            {% endfor %}
+        </ul>
+    </div>
+    
+{% endblock %}
